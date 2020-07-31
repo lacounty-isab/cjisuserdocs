@@ -1,0 +1,335 @@
+openapi: 3.0.2
+info:
+  title: LEA API
+  description: >-
+    API for reading, adding and updating records for
+    Law Enforcement Agencies of Los Angeles County.
+  version: 1.0.0
+servers:
+  - url: "https://api-dev.codes.lacounty-isab.org/api/v1"
+    description: Dev environment
+  - url: "https://api-test.codes.lacounty-isab.org/api/v1"
+    description: Test environment
+  - url: "https://api.codes.lacounty-isab.org/api/v1"
+    description: Production environment
+paths:
+  '/lea/byLeaCode/{code}':
+    get:
+      summary: Retrieve records by partial LEA code
+      description: >-
+        Retrieve all LEA records where the arrest agency code starts with the
+        same string as the parameter.
+      parameters:
+        - name: code
+          in: path
+          description: matches the beginning of an arrest agency code
+          required: true
+          schema:
+            type: string
+            maxLength: 4
+        - $ref: "#/components/parameters/x-api-key"
+      responses:
+        "200":
+          $ref: "#/components/responses/LeaList"
+        "500":
+          $ref: "#/components/responses/ServerError"
+  '/lea/byOriCode/{ori}':
+    get:
+      summary: Retrieve records by partial ORI code
+      description: >-
+        Retrieve all LEA records where the ORI starts with the
+        same string as the parameter.
+      parameters:
+        - name: ori
+          in: path
+          description: matches the beginning of an ORI
+          required: true
+          schema:
+            type: string
+        - $ref: "#/components/parameters/x-api-key"
+      responses:
+        "200":
+          $ref: "#/components/responses/LeaList"
+        "500":
+          $ref: "#/components/responses/ServerError"
+  '/lea':
+    get:
+      summary: Get all LEA records
+      parameters:
+        - $ref: "#/components/parameters/x-api-key"
+      responses:
+        "200":
+          $ref: "#/components/responses/LeaList"
+        "500":
+          $ref: "#/components/responses/ServerError"
+    patch:
+      summary: Update a LEA record with supplied fields
+      parameters:
+        - $ref: "#/components/parameters/x-api-key"
+      requestBody:
+        description: Properties of a LEA record
+        content:
+          appplication/json:
+            schema:
+              $ref: "#/components/schemas/NewLea"
+        required: true
+      responses:
+        "200":
+          description: A successful update
+          headers:
+            x-amzn-RequestId:
+              $ref: "#/components/headers/x-amzn-RequestId"
+            x-cjisapi-RequestId:
+              $ref: "#/components/headers/x-cjisapi-RequestId"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  affectedRows:
+                    type: integer
+              example:
+                changedRows: 1
+        "400":
+          description: >-
+            Invalid request due to a non-existing LEA code or no valid
+            fields to update.
+          headers:
+            x-amzn-RequestId:
+              $ref: "#/components/headers/x-amzn-RequestId"
+            x-cjisapi-RequestId:
+              $ref: "#/components/headers/x-cjisapi-RequestId"
+        "401":
+          $ref: "#/components/responses/TokenMissingOrInvalid"
+        "403":
+          $ref: "#/components/responses/NotAuthorized"
+        "500":
+          $ref: "#/components/responses/ServerError"
+      security:
+        - cjis-auth: []
+    post:
+      summary: Add a LEA record with supplied fields
+      parameters:
+        - $ref: "#/components/parameters/x-api-key"
+      requestBody:
+        description: Properties of a LEA record
+        content:
+          appplication/json:
+            schema:
+              $ref: "#/components/schemas/NewLea"
+        required: true
+      responses:
+        "200":
+          description: A successful add
+          headers:
+            x-amzn-RequestId:
+              $ref: "#/components/headers/x-amzn-RequestId"
+            x-cjisapi-RequestId:
+              $ref: "#/components/headers/x-cjisapi-RequestId"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  affectedRows:
+                    type: integer
+              example:
+                affectedRows: 1
+        "400":
+          description: >-
+            Invalid request due to a non-existing LEA code or no valid
+            fields to update.
+          headers:
+            x-amzn-RequestId:
+              $ref: "#/components/headers/x-amzn-RequestId"
+            x-cjisapi-RequestId:
+              $ref: "#/components/headers/x-cjisapi-RequestId"
+        "401":
+          $ref: "#/components/responses/TokenMissingOrInvalid"
+        "403":
+          $ref: "#/components/responses/NotAuthorized"
+        "500":
+          $ref: "#/components/responses/ServerError"
+      security:
+        - cjis-auth: []
+
+components:
+  schemas:
+    NewLea:
+      type: object
+      required:
+        - arrest_agency_code
+      additionalProperties: false
+      properties:
+        arrest_agency_code:
+          type: string
+          maxLength: 4
+        ncic_identification:
+          type: string
+          maxLength: 10
+        agency_name:
+          type: string
+          maxLength: 40
+        source_system:
+          type: string
+          maxLength: 3
+        address:
+          type: string
+          maxLength: 37
+        city:
+          type: string
+          maxLength: 20
+        state:
+          type: string
+          maxLength: 2
+        zipcode:
+          type: string
+          maxLength: 10
+        telephone:
+          type: string
+          maxLength: 18
+        pts_service_branch:
+          type: string
+          maxLength: 3
+        jail_facility:
+          type: string
+          maxLength: 1
+        agency_type:
+          type: string
+          maxLength: 3
+        printer_id:
+          type: string
+          maxLength: 4
+        expired_flag:
+          type: string
+          maxLength: 1
+        primary_lea:
+          type: string
+          maxLength: 4
+        subpoena_service_type:
+          type: string
+          maxLength: 1
+        user_id:
+          type: string
+          maxLength: 30
+        ori_type:
+          type: string
+          maxLength: 1
+        caldoj_compare_date:
+          type: string
+          format: date
+        create_date:
+          type: string
+          format: date
+        update_date:
+          type: string
+          format: date
+        expiration_date:
+          type: string
+          format: date
+        effective_start_date:
+          type: string
+          format: date
+        ajis_ori_sub_field:
+          type: string
+          maxLength: 1
+        caldoj_ori_onfile:
+          type: string
+          maxLength: 1
+        aka_agency_name:
+          type: string
+          maxLength: 40
+        caldoj_agency_name:
+          type: string
+          maxLength: 90
+        fax_number:
+          type: string
+          maxLength: 18
+    Lea:
+      allOf:
+        - $ref: "#/components/schemas/NewLea"
+        - type: object
+          required:
+            - last_updated
+          properties:
+            last_updated:
+              type: string
+              format: date-time
+    Error:
+      type: object
+      required:
+        - message
+      properties:
+        message:
+          type: string
+  responses:
+    LeaList:
+      description: A list of LEA records
+      headers:
+        x-amzn-RequestId:
+          $ref: "#/components/headers/x-amzn-RequestId"
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              $ref: "#/components/schemas/Lea"
+    TokenMissingOrInvalid:
+      description: Authentication token was missing or invalid
+      headers:
+        x-amzn-RequestId:
+          $ref: "#/components/headers/x-amzn-RequestId"
+        x-cjisapi-RequestId:
+          $ref: "#/components/headers/x-cjisapi-RequestId"
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+    NotAuthorized:
+      description: >-
+        Scope provided in token not sufficient to fulfill request.
+        Returns an array of fields outside scope.
+      headers:
+        x-amzn-RequestId:
+          $ref: "#/components/headers/x-amzn-RequestId"
+        x-cjisapi-RequestId:
+          $ref: "#/components/headers/x-cjisapi-RequestId"
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              type: string
+    ServerError:
+      description: Server encountered an error during processing.
+      headers:
+        x-amzn-RequestId:
+          $ref: "#/components/headers/x-amzn-RequestId"
+        x-cjisapi-RequestId:
+          $ref: "#/components/headers/x-cjisapi-RequestId"
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+  parameters:
+    x-api-key:
+      name: x-api-key
+      in: header
+      description: API key enforced by AWS API Gateway
+      schema:
+        type: string
+      required: true
+  headers:
+    x-amzn-RequestId:
+      description: "Logged in AWS API Gateway CloudWatch; formatted as UUID"
+      schema:
+        type: string
+    x-cjisapi-RequestId:
+      description: Audit log reference formatted as UUID
+      schema:
+        type: string
+  securitySchemes:
+    cjis-auth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT

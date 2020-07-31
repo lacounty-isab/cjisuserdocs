@@ -1,0 +1,216 @@
+openapi: 3.0.2
+info:
+  title: Charge Conversion API
+  description: API for reading, adding and deleting charge conversions.
+  version: 1.0.0
+servers:
+  - url: "https://api-dev.codes.lacounty-isab.org/api/v1"
+    description: Dev environment
+  - url: "https://api-test.codes.lacounty-isab.org/api/v1"
+    description: Test environment
+  - url: "https://api.codes.lacounty-isab.org/api/v1"
+    description: Prod environment
+paths:
+  '/ChargeConversion/{cjis}/{source}/{external}':
+    get:
+      summary: Get conversion list with optional filters.
+      description: >-
+        Return all records based on a partial CJIS code match,
+        exact source system match, and optional partial external match.
+        The results will contain all records where the beginning
+        of the CJIS code matches the `cjis` parameter, the `source`
+        parameter is an exact match and the beginning of the external
+        code matches the `external` parameter.
+      parameters:
+        - name: cjis
+          in: path
+          description: >-
+            All returned records must have a `cjis` field the begins
+            with this parameter value.
+          required: true
+          schema:
+            type: string
+        - name: source
+          in: path
+          description: >-
+            All returned records must have a `source` field that matches
+            this parameter value.
+          required: true
+          schema:
+            type: string
+        - name: external
+          in: path
+          description: >-
+            All returned records must have an `external` field that begins
+            with this parameter value.
+          required: true
+          schema:
+            type: string
+        - $ref: "#/components/parameters/x-api-key"
+      responses:
+        '200':
+          $ref: "#/components/responses/ConversionList"
+  '/ChargeConversion':
+    get:
+      summary: Return all charge conversion records
+      parameters:
+        - $ref: "#/components/parameters/x-api-key"
+      responses:
+        '200':
+          $ref: "#/components/responses/ConversionList"
+    post:
+      summary: Add a new charge conversion record
+      parameters:
+        - $ref: "#/components/parameters/x-api-key"
+      requestBody:
+        description: a charge conversion record
+        content:
+          'application/json':
+            schema:
+              $ref: "#/components/schemas/NewConversion"
+        required: true
+      responses:
+        "200":
+          $ref: "#/components/responses/AffectedRows"
+      security:
+        - cjis-auth: []
+    delete:
+      summary: Remove a charge conversion record
+      parameters:
+        - $ref: "#/components/parameters/x-api-key"
+      requestBody:
+        description: source and external codes
+        content:
+          'application/json':
+            schema:
+              type: object
+              required:
+                - source
+                - external
+              properties:
+                source:
+                  type: string
+                external:
+                  type: string
+        required: true
+      responses:
+        "200":
+          $ref: "#/components/responses/AffectedRows"
+      security:
+        - cjis-auth: []
+
+components:
+  schemas:
+    NewConversion:
+      type: object
+      properties:
+        source:
+          type: string
+          description: the source system of the conversion
+          enum:
+            - AJIS
+            - JAI
+            - TCIS
+            - DA
+            - PIMS
+        cjis:
+          type: string
+          description: the full CJIS code
+        external:
+          type: string
+          description: the code abbreviated for the source system
+      required:
+        - source
+        - cjis
+        - external
+    Conversion:
+      allOf:
+        - $ref: "#/components/schemas/NewConversion"
+        - type: object
+          properties:
+            last_updated:
+              type: string
+              format: 'date-time'
+          required:
+            - last_updated
+  responses:
+    ConversionList:
+      description: A list of charge conversions
+      headers:
+        x-amzn-RequestId:
+          $ref: "#/components/headers/x-amzn-RequestId"
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              $ref: "#/components/schemas/Conversion"
+          example:
+            - source: AJIS
+              cjis: HS12101(A)(1)
+              external: HS12101(A)1
+              last_updated: 2019-10-08
+            - source: AJIS
+              cjis: HS12101(A)(2)
+              external: HS12101(A)2
+              last_updated: 2019-10-08
+            - source: AJIS
+              cjis: HS12101(A)(3)
+              external: HS12101(A)3
+              last_updated: 2019-10-08
+    AffectedRows:
+      description: number of rows affected by update or delete
+      headers:
+        x-amzn-RequestId:
+          $ref: "#/components/headers/x-amzn-RequestId"
+        x-cjisapi-RequestId:
+          $ref: "#/components/headers/x-cjisapi-RequestId"
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              affectedRows:
+                type: integer
+    APIKeyMising:
+      description: Request is missing an API token.
+      headers:
+        x-amzn-RequestId:
+          description: AWS request ID
+          schema:
+            type: string
+    DatabaseError:
+      description: Server error
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              code:
+                type: string
+              errno:
+                type: integer
+              sqlMessage:
+                type: string
+  parameters:
+    x-api-key:
+      name: x-api-key
+      in: header
+      description: API key enforced by AWS API Gateway
+      schema:
+        type: string
+      required: true
+  headers:
+    x-amzn-RequestId:
+      description: "Logged in AWS API Gateway CloudWatch; formatted as UUID"
+      schema:
+        type: string
+    x-cjisapi-RequestId:
+      description: Audit log reference formatted as UUID
+      schema:
+        type: string
+  securitySchemes:
+    cjis-auth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT

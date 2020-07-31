@@ -1,0 +1,8 @@
+node_modules
+src
+blog
+docs
+static
+*.js
+*.json
+.docusaurus

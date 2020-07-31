@@ -1,0 +1,333 @@
+openapi: 3.0.2
+info:
+  version: 1.0.0
+  title: Charge Code API
+  description: API for reading, adding, and updating CJIS charge codes
+servers:
+  - url: "https://api-dev.codes.lacounty-isab.org/api/v1"
+    description: Dev environment
+  - url: "https://api-test.codes.lacounty-isab.org/api/v1"
+    description: Test environment
+  - url: "https://api.codes.lacounty-isab.org/api/v1"
+    description: Production environmentt
+paths:
+  '/ChargeCode/{statute}':
+    get:
+      summary: Get charges by statute
+      description: Match charges with statutes that begin with provided value.
+      parameters:
+        - name: statute
+          in: path
+          description: Matches the beginning of the statue.
+          required: true
+          schema:
+            type: string
+        - $ref: "#/components/parameters/x-api-key"
+      responses:
+        '200':
+          $ref: "#/components/responses/ChargeCodeList"
+  '/ChargeCode/{code}/{statute}':
+    get:
+      summary: Get charges by code and statute
+      description: Match charges with code and statutes that begin with provided value.
+      parameters:
+        - name: code
+          in: path
+          description: Matches the two character code
+          required: true
+          schema:
+            type: string
+        - name: statute
+          in: path
+          description: Matches the beginning of the statue.
+          required: true
+          schema:
+            type: string
+        - $ref: "#/components/parameters/x-api-key"
+      responses:
+        '200':
+          $ref: "#/components/responses/ChargeCodeList"
+  '/ChargeCode/{code}/{statute}/{level}':
+    get:
+      summary: Get charges by code, statute, and level
+      description: Match charges with code and statutes that begin with provided value.
+      parameters:
+        - name: code
+          in: path
+          description: Matches the two character code exactly
+          required: true
+          schema:
+            type: string
+        - name: statute
+          in: path
+          description: Matches the beginning of the statue.
+          required: true
+          schema:
+            type: string
+        - name: level
+          in: path
+          description: Matches the charge level exactly
+          required: true
+          schema:
+            type: string
+        - $ref: "#/components/parameters/x-api-key"
+      responses:
+        '200':
+          $ref: "#/components/responses/ChargeCodeList"
+  '/ChargeCode':
+    get:
+      summary: Get all charge codes
+      parameters:
+        - $ref: "#/components/parameters/x-api-key"
+      responses:
+        "200":
+          $ref: "#/components/responses/ChargeCodeList"
+    post:
+      summary: Create a charge code
+      description: Adds a new CJIS charge code
+      parameters:
+        - $ref: "#/components/parameters/x-api-key"
+      requestBody:
+        description: New charge code without id
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/NewChargeCode"
+      responses:
+        "200":
+          description: ID of created charge code
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  insertId:
+                    type: integer
+              example:
+                insertId: 4325
+        "400":
+          $ref: "#/components/responses/InvalidRequest"
+        "403":
+          $ref: "#/components/responses/Unauthorized"
+        "500":
+          $ref: "#/components/responses/DatabaseError"
+      security:
+        - cjis-auth: []
+    patch:
+      summary: Update a charge code
+      description: Update an existing charge code
+      parameters:
+        - $ref: "#/components/parameters/x-api-key"
+      requestBody:
+        description: Updated charge code with id
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ChargeCode"
+      responses:
+        '200':
+          description: 200 number of changed rows
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  changedRows:
+                    type: integer
+              example:
+                changedRows: 1
+        '400':
+          $ref: "#/components/responses/InvalidRequest"
+        '403':
+          $ref: "#/components/responses/Unauthorized"
+        '500':
+          $ref: "#/components/responses/DatabaseError"
+      security:
+        -  cjis-auth: []
+
+components:
+  schemas:
+    NewChargeCode:
+      type: object
+      properties:
+        code:
+          type: string
+          maxLength: 2
+        statute:
+          type: string
+          maxLength: 18
+        literal_id:
+          description: DA form number
+          type: string
+          maxLength: 3
+        degree:
+          type: string
+          maxLength: 1
+        offense_level:
+          type: string
+          maxLength: 1
+        full_description:
+          type: string
+          maxLength: 60
+        short_description:
+          type: string
+          maxLength: 25
+        classification_code:
+          type: string
+          maxLength: 2
+        bcs_class_code:
+          type: string
+          maxLength: 3
+        reduce_flag:
+          type: string
+          maxLength: 1
+        violent_flag:
+          type: string
+          maxLength: 1
+        register_flag:
+          type: string
+          maxLength: 1
+        destruct_flag:
+          type: string
+          maxLength: 1
+        reporting_district:
+          type: string
+          maxLength: 2
+        bail_amount:
+          type: string
+          maxLength: 9
+        bcs_hierarchy:
+          type: integer
+          maxLength: 6
+        eff_date:
+          type: string
+          maxLength: 10
+        exp_date:
+          type: string
+          maxLength: 10
+        reason:
+          type: string
+          maxLength: 40
+        composite_key:
+          type: string
+          maxLength: 33
+        alt_composite_key:
+          type: string
+          maxLength: 33
+        state_cjis_code:
+          type: string
+          maxLength: 7
+        custody_code:
+          type: string
+          maxLength: 1
+        sentence_range:
+          type: string
+          maxLength: 12
+    ChargeCode:
+      allOf:
+        - $ref: "#/components/schemas/NewChargeCode"
+        - type: object
+          required:
+            - id
+          properties:
+            id:
+              type: integer
+  responses:
+    ChargeCodeList:
+      description: A list of charge codes
+      headers:
+        x-amzn-RequestId:
+          $ref: "#/components/headers/x-amzn-RequestId"
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              $ref: "#/components/schemas/ChargeCode"
+          example:
+            - id: 2309
+              code: PC
+              statute: 12220(A)
+              literal_id: ""
+              degree: ""
+              offense_level: M
+              full_description: POSSESS/TRANSPORT MACHINEGUN
+              short_description: WEAPONS VIOLATION
+              classification_code: WE
+              bcs_class_code: "846"
+              reduce_flag: ""
+              violent_flag: ""
+              eff_date: "1991-01-01"
+              exp_date: "2011-12-31"
+              reason: REPEALED - SEE PC32625
+    InvalidRequest:
+      description: Not authorized; return unauthorized fields
+      headers:
+        x-amzn-RequestId:
+          $ref: "#/components/headers/x-amzn-RequestId"
+        x-cjisapi-RequestId:
+          $ref: "#/components/headers/x-cjisapi-RequestId"
+      content:
+        application/json:
+          schema:
+            type: array
+            minLength: 1
+            items:
+              type: string
+    Unauthorized:
+      description: Not authorized; return unauthorized fields
+      headers:
+        x-amzn-RequestId:
+          $ref: "#/components/headers/x-amzn-RequestId"
+        x-cjisapi-RequestId:
+          $ref: "#/components/headers/x-cjisapi-RequestId"
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              type: string
+            example:
+              - code
+              - statute
+              - degree
+    DatabaseError:
+      description: Server error
+      headers:
+        x-amzn-RequestId:
+          $ref: "#/components/headers/x-amzn-RequestId"
+        x-cjisapi-RequestId:
+          $ref: "#/components/headers/x-cjisapi-RequestId"
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              code:
+                type: integer
+              errno:
+                type: integer
+              sqlMessage:
+                type: string
+  parameters:
+    x-api-key:
+      name: x-api-key
+      in: header
+      description: API key enforced by AWS API Gateway
+      schema:
+        type: string
+      required: true
+  headers:
+    x-amzn-RequestId:
+      description: "Logged in AWS API Gateway CloudWatch; formatted as UUID"
+      schema:
+        type: string
+    x-cjisapi-RequestId:
+      description: Audit log reference formatted as UUID
+      schema:
+        type: string
+  securitySchemes:
+    cjis-auth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
