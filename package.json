@@ -13,10 +13,10 @@
     "@docusaurus/preset-classic": "^2.0.0-alpha.61",
     "classnames": "^2.2.6",
     "core-js": "^3.6.5",
-    "mobx": "^4.15.4",
+    "mobx": "^4.15.6",
     "react": "^16.8.4",
     "react-dom": "^16.8.4",
-    "redoc": "^2.0.0-rc.30",
+    "redoc": "^2.0.0-rc.38",
     "styled-components": "^5.1.1"
   },
   "browserslist": {

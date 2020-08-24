@@ -17,7 +17,7 @@ As a UI product, it is somewhat rough around the edges.
 We have no dedicated team to UI development and time spent
 improving the UI has to be triaged against other demands of
 application and infrastructure components.  Since the API
-endpoints are [CORS](docs/reference/glossary#cors), anyone
+endpoints are [CORS](/docs/glossary#cors), anyone
 can write their own client (browser-based, command-line or
 workstation GUI) to work with the tables through the API.
 
