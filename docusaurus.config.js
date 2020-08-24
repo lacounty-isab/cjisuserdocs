@@ -13,7 +13,7 @@ module.exports = {
         alt: 'Site Logo',
         src: 'img/LAC-seal.png',
       },
-      links: [
+      items: [
         {
           to: 'docs/',
           activeBasePath: 'docs',
@@ -57,7 +57,7 @@ module.exports = {
             },
             {
               label: 'DockerHub',
-              href: 'https://hub.docker.com/orgs/lacounty'
+              href: 'https://hub.docker.com/u/lacounty'
             },
             {
               label: 'NPM',
@@ -71,10 +71,6 @@ module.exports = {
             {
               label: 'Blog',
               to: 'blog',
-            },
-            {
-              label: 'GitHub',
-              href: 'https://github.com/lacounty-isab',
             },
           ],
         },

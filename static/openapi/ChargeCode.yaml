@@ -11,17 +11,19 @@ servers:
   - url: "https://api.codes.lacounty-isab.org/api/v1"
     description: Production environmentt
 paths:
-  '/ChargeCode/{statute}':
+  '/ChargeCode/{id}':
     get:
-      summary: Get charges by statute
-      description: Match charges with statutes that begin with provided value.
+      summary: Get charge by id 
+      description: Query a single charge code by ID.
       parameters:
-        - name: statute
+        - name: id
           in: path
-          description: Matches the beginning of the statue.
+          description: >-
+            Matches the internal ID (primary key) of the charge code.
+            Returns an array of zero (no match) or one (match) charge code.
           required: true
           schema:
-            type: string
+            type: integer
         - $ref: "#/components/parameters/x-api-key"
       responses:
         '200':
