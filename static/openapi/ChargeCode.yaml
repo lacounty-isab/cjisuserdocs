@@ -4,6 +4,8 @@ info:
   title: Charge Code API
   description: API for reading, adding, and updating CJIS charge codes
 servers:
+  - url: "http//:localhost:6010/api"
+    description: "Local workstation, no API Gateway"
   - url: "https://api-dev.codes.lacounty-isab.org/api/v1"
     description: Dev environment
   - url: "https://api-test.codes.lacounty-isab.org/api/v1"
@@ -225,6 +227,10 @@ components:
         sentence_range:
           type: string
           maxLength: 12
+        template_id:
+          type: integer
+          format: int32
+          minimum: 0
     ChargeCode:
       allOf:
         - $ref: "#/components/schemas/NewChargeCode"
@@ -234,6 +240,9 @@ components:
           properties:
             id:
               type: integer
+            last_updated:
+              type: string
+              maxLength: 10
   responses:
     ChargeCodeList:
       description: A list of charge codes
@@ -262,6 +271,7 @@ components:
               eff_date: "1991-01-01"
               exp_date: "2011-12-31"
               reason: REPEALED - SEE PC32625
+              template_id: 2309
     InvalidRequest:
       description: Not authorized; return unauthorized fields
       headers:

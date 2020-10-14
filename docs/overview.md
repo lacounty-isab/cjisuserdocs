@@ -1,5 +1,6 @@
 ---
 id: overview
+slug: /
 title: CJIS Tables
 sidebar_label: Overview
 ---
