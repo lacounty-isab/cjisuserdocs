@@ -9,16 +9,16 @@ The following figure summarizes the
 infrastructure components that
 support the CJIS code table implementation.
 
-![design diagram](/img/SystemDesign.png)
+![design diagram](/img/SystemDesign.svg)
 
 Web API calls enter the system through
 [API Gateway](/docs/glossary#apigw)
 at the bottom left of the diagram.
 The gateway verifies the API key and applies any quality
 of service limits that are configured.
-The request is forward through a 
+The request is forwarded through a 
 [VPC](/docs/glossary#vpc) link
-to private IP on a network load balancer (LB).
+to a private IP on a network load balancer (LB).
 The LB routes the request to an instance of a CJIS API
 [docker](/docs/glossary#docker)
 container.

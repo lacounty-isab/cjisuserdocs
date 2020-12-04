@@ -3,7 +3,7 @@ module.exports = {
   tagline: 'Code tables maintained by ISAB',
   url: 'https://docs.codes.lacounty-isab.org',
   baseUrl: '/',
-  favicon: 'img/favicon.ico',
+  favicon: 'img/favicon-96x96.png',
   organizationName: 'lacounty-isab', // Usually your GitHub org/user name.
   projectName: 'cjisdocs', // Usually your repo name.
   themeConfig: {

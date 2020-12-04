@@ -3,7 +3,6 @@ import classnames from 'classnames';
 import Layout from '@theme/Layout';
 import Link from '@docusaurus/Link';
 import useDocusaurusContext from '@docusaurus/useDocusaurusContext';
-import useBaseUrl from '@docusaurus/useBaseUrl';
 import styles from './styles.module.css';
 
 const API = ({title, summary, spec}) => (
@@ -17,8 +16,7 @@ const API = ({title, summary, spec}) => (
       </div>
       <div className={'card__footer'}>
         <div className={'button-group button-group--block'}>
-          <a className={'button button--secondary'}
-          href={spec}>
+          <a className={'button button--secondary'} target="_blank" href={spec}>
             Download YAML
           </a>
           <Link className={'button button--secondary'}

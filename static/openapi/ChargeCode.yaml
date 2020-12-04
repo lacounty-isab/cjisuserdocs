@@ -177,7 +177,8 @@ components:
           type: string
           maxLength: 1
           description: >-
-            There are only two types of degree: `1` and `2`.  Only
+            Identifies the degree of a specific charge.
+            There are only two types of degree, `1` and `2`.  Only
             associated with three charges - burglary, robbery and murder.  
         offense_level:
           type: string
@@ -185,6 +186,12 @@ components:
           description: >-
             Identifies `F` - felony, `M` - misdemeanor, `I` - infraction,
             `O` - other, `J` - juvenile
+          enum:
+            - F
+            - M
+            - I
+            - O
+            - J
         full_description:
           type: string
           maxLength: 60
@@ -208,11 +215,17 @@ components:
           maxLength: 1
           description: >-
             Whether a felony charge is reducible to a misdemeanor.
+          enum:
+            - Y
+            - N
         violent_flag:
           type: string
           maxLength: 1
           description: >-
             Whether charge is classified as a violent offense.
+          enum:
+            - Y
+            - N
         register_flag:
           type: string
           maxLength: 1
@@ -220,12 +233,19 @@ components:
             Whether charge requires subject to register.  Three types of
             registration are arson, narcotics and sex.  `C` was later added
             for conditional registration.
+          enum:
+            - Y
+            - N
+            - C
         destruct_flag:
           type: string
           maxLength: 1
           description: >-
             Whether HS code violations require an agency to destroy records
             after a certain date.  Data comes from APS.
+          enum:
+            - Y
+            - N
         reporting_district:
           type: string
           maxLength: 2
@@ -236,7 +256,7 @@ components:
           type: string
           maxLength: 9
           description: >-
-            Originally obtained from bail schedules developed by Municiple
+            Originally obtained from bail schedules developed by Municipal
             and Superior courts.
         bcs_hierarchy:
           type: integer
@@ -260,12 +280,13 @@ components:
           type: string
           maxLength: 33
           description: |
-            A concatenation of six fields used to enforce uniqueness of entries.
+            A concatenation of six fields used to enforce uniqueness of entries
+            within ADABAS table `32757`.
             * `code` - 2 characters
             * `statute` - 18 characters
             * `literal_id` - 3 characters
             * `degree` - 1 character
-            * offense_level` - 1 character
+            * `offense_level` - 1 character
             * `exp_date` - 8 characters
         alt_composite_key:
           type: string
