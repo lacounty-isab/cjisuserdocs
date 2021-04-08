@@ -6,8 +6,14 @@ info:
   description: API for reading, adding, and updating CJIS color codes
 
 servers:
-  - url: http://isablnxdev01.isd.lacounty.gov:6010/api
-  - url: http://cjistables-isab-dev.devcp.isd.lacounty.gov/api
+  - url: "http//:localhost:6010/api"
+    description: "Local workstation, no API Gateway"
+  - url: "https://api-dev.codes.lacounty-isab.org/api/v1"
+    description: Development environment
+  - url: "https://api-test.codes.lacounty-isab.org/api/v1"
+    description: Test environment
+  - url: "https://api.codes.lacounty-isab.org/api/v1"
+    description: Production environment
 
 paths:
   /HairColor:

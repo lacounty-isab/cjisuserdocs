@@ -6,8 +6,10 @@ info:
     Law Enforcement Agencies of Los Angeles County.
   version: 1.0.0
 servers:
+  - url: "http//:localhost:6010/api"
+    description: "Local workstation, no API Gateway"
   - url: "https://api-dev.codes.lacounty-isab.org/api/v1"
-    description: Dev environment
+    description: Development environment
   - url: "https://api-test.codes.lacounty-isab.org/api/v1"
     description: Test environment
   - url: "https://api.codes.lacounty-isab.org/api/v1"
