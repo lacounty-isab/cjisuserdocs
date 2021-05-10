@@ -22,6 +22,11 @@ title: Glossary
     Amazon Web Service - A cloud computing service providing virtualized infrastructure and
     application services.
   </dd>
+  <dt><a name="bearer">Bearer Token</a></dt>
+  <dd>
+    An <a href="https://tools.ietf.org/html/rfc6750">RFC specification</a>
+    for transmission of security tokens in an HTTP <tt>Authorization</tt> header.
+  </dd>
   <dt><a name="cjis">CJIS</a></dt>
   <dd>
     Criminal Justice Information Service – A catch-all term that is applied to many things
@@ -46,6 +51,13 @@ title: Glossary
     isolate and virtualize certain aspects of the OS kernel.
     It's more efficient than traditional OS virtualization techniques
     by not attempting to virtualize an <i>entire</i> kernel.
+  </dd>
+  <dt><a name="jwt">JWT</a></dt>
+  <dd>
+    JSON Web Token is a token format designed for use by web applicatons.
+    Its decoded format is JSON.  Its encoded format, Base64url, is a slight 
+    variation of Base64 this is safer for transmission in HTTP headers and
+    URLs.
   </dd>
   <dt><a name="lea">LEA</a></dt>
   <dd>

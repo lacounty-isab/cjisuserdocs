@@ -127,7 +127,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/ChargeCode"
+              $ref: "#/components/schemas/UpdateChargeCode"
       responses:
         '200':
           description: 200 number of changed rows
@@ -292,6 +292,146 @@ components:
           type: string
           maxLength: 33
           description: Same as `alt_composite_key`
+        state_cjis_code:
+          type: string
+          maxLength: 7
+          description: Requested by CCHRS in 2002
+        custody_code:
+          type: string
+          maxLength: 1
+          description: Requested by APS in 1991
+        sentence_range:
+          type: string
+          maxLength: 12
+          description: Requested by ACTS and DIMS in 1991
+        template_id:
+          type: integer
+          format: int32
+          minimum: 0
+          description: Used as primary key by original ADABAS `32757` table
+    UpdateChargeCode:
+      type: object
+      required:
+        - id 
+      properties:
+        id:
+          type: integer
+        code:
+          type: string
+          maxLength: 2
+        statute:
+          type: string
+          maxLength: 18
+        literal_id:
+          type: string
+          maxLength: 3
+          description: >-
+             Three-character description of specifics associated with
+             the same charge; e.g. `COC` for Cocaine, 
+             `PCP` for Phencyclidine
+        degree:
+          type: string
+          maxLength: 1
+          description: >-
+            Identifies the degree of a specific charge.
+            There are only two types of degree, `1` and `2`.  Only
+            associated with three charges - burglary, robbery and murder.  
+        offense_level:
+          type: string
+          maxLength: 1
+          description: >-
+            Identifies `F` - felony, `M` - misdemeanor, `I` - infraction,
+            `O` - other, `J` - juvenile
+          enum:
+            - F
+            - M
+            - I
+            - O
+            - J
+        full_description:
+          type: string
+          maxLength: 60
+        short_description:
+          type: string
+          maxLength: 25
+        classification_code:
+          type: string
+          maxLength: 2
+          description: >-
+            Identifies type of charge; e.g. `HO` - Homicide, `RO` - Robbery.
+            Originally created based on BCS code groups.
+        bcs_class_code:
+          type: string
+          maxLength: 3
+          description: >-
+            Numeric BCS code assigned by the state to group charges by type
+            of offense.
+        reduce_flag:
+          type: string
+          maxLength: 1
+          description: >-
+            Whether a felony charge is reducible to a misdemeanor.
+          enum:
+            - Y
+            - N
+        violent_flag:
+          type: string
+          maxLength: 1
+          description: >-
+            Whether charge is classified as a violent offense.
+          enum:
+            - Y
+            - N
+        register_flag:
+          type: string
+          maxLength: 1
+          description: >-
+            Whether charge requires subject to register.  Three types of
+            registration are arson, narcotics and sex.  `C` was later added
+            for conditional registration.
+          enum:
+            - Y
+            - N
+            - C
+        destruct_flag:
+          type: string
+          maxLength: 1
+          description: >-
+            Whether HS code violations require an agency to destroy records
+            after a certain date.  Data comes from APS.
+          enum:
+            - Y
+            - N
+        reporting_district:
+          type: string
+          maxLength: 2
+          description: >-
+            Abbreviaton of state agency receiving reportable data.  Data for
+            this field originally obtained from MCI.
+        bail_amount:
+          type: string
+          maxLength: 9
+          description: >-
+            Originally obtained from bail schedules developed by Municipal
+            and Superior courts.
+        bcs_hierarchy:
+          type: integer
+          maxLength: 6
+          description: >-
+            Originally obtained from BCS code listing and pertains to the 
+            seriousness of the offense.  Lower numbers are more serious.
+        eff_date:
+          type: string
+          maxLength: 10
+          description: Effective date
+        exp_date:
+          type: string
+          maxLength: 10
+          description: Expiration date; often used to designate a charge as invalid.
+        reason:
+          type: string
+          maxLength: 40
+          description: Reason for expiring a charge
         state_cjis_code:
           type: string
           maxLength: 7
