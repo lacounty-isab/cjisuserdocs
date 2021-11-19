@@ -16,4 +16,4 @@ tables and their CJIS Codes counterparts.
 | `32751` | Juvenile Court Districts |  |
 | `32754` | Court Dept/Div to District |  |
 | `32756` | Arrest Agency | System of record is now CCHRS LEA Master; readonly copy provided by API. |
-| `32757` | Charge Codes | Awaiting stands from Cal DOJ; meanwhile API exposes dump from ADABAS table. |
+| `32757` | Charge Codes | Awaiting standards from Cal DOJ; meanwhile API exposes dump from ADABAS table. |

@@ -4,7 +4,7 @@ info:
   description: >-
     API for reading, adding and updating records for
     Law Enforcement Agencies of Los Angeles County.
-  version: 1.0.0
+  version: 1.0.1
 servers:
   - url: "http//:localhost:6010/api"
     description: "Local workstation, no API Gateway"
@@ -17,18 +17,20 @@ servers:
 paths:
   '/lea/byLeaCode/{code}':
     get:
-      summary: Retrieve records by partial LEA code
+      summary: Retrieve LEA by arrest agency code
       description: >-
-        Retrieve all LEA records where the arrest agency code starts with the
-        same string as the parameter.
+        Retrieve the LEA record for the arrest agency code.
+        Returns an array of one (match) or zero (no match).
       parameters:
         - name: code
           in: path
-          description: matches the beginning of an arrest agency code
+          description: matches the arrest agency code
           required: true
           schema:
             type: string
+            minLength: 4
             maxLength: 4
+          example: "1902"
         - $ref: "#/components/parameters/x-api-key"
       responses:
         "200":
@@ -66,6 +68,16 @@ paths:
           $ref: "#/components/responses/ServerError"
     patch:
       summary: Update a LEA record with supplied fields
+      description: >-
+        This operation **updates** an existing LEA record.
+        Some fields such as `create_date`, `update_date`,
+        and `source_system` can only be modified by an
+        administrative user.  But even an administrative
+        user cannot modify `user_id`.  For non-admins,
+        `update_date` is populated with the current
+        date while `source_system` is populated using the
+        credential *issuer* and `user_id` populated with the
+        credential *subject*.
       parameters:
         - $ref: "#/components/parameters/x-api-key"
       requestBody:
@@ -73,7 +85,7 @@ paths:
         content:
           appplication/json:
             schema:
-              $ref: "#/components/schemas/NewLea"
+              $ref: "#/components/schemas/UpdateLea"
         required: true
       responses:
         "200":
@@ -111,6 +123,17 @@ paths:
         - cjis-auth: []
     post:
       summary: Add a LEA record with supplied fields
+      description: >-
+        This operation **creates** an existing LEA record.
+        Some fields such as `create_date`, `update_date`,
+        and `source_system` can only be modified by an
+        administrative user.  But even an administrative
+        user cannot modify `user_id`.  For non-admins,
+        `update_date` and `create_date` are populated with
+        the current
+        date while `source_system` is populated using the
+        credential *issuer* and `user_id` populated with the
+        credential *subject*.
       parameters:
         - $ref: "#/components/parameters/x-api-key"
       requestBody:
@@ -158,6 +181,89 @@ paths:
 components:
   schemas:
     NewLea:
+      type: object
+      required:
+        - arrest_agency_code
+        - ncic_identification
+        - agency_name
+      additionalProperties: false
+      properties:
+        arrest_agency_code:
+          type: string
+          maxLength: 4
+        ncic_identification:
+          type: string
+          maxLength: 10
+        agency_name:
+          type: string
+          maxLength: 40
+        source_system:
+          type: string
+          maxLength: 3
+        address:
+          type: string
+          maxLength: 37
+        city:
+          type: string
+          maxLength: 20
+        state:
+          type: string
+          maxLength: 2
+        zipcode:
+          type: string
+          maxLength: 10
+        telephone:
+          type: string
+          maxLength: 18
+        pts_service_branch:
+          type: string
+          maxLength: 3
+        jail_facility:
+          type: string
+          maxLength: 1
+        agency_type:
+          type: string
+          maxLength: 3
+        printer_id:
+          type: string
+          maxLength: 4
+        expired_flag:
+          type: string
+          maxLength: 1
+        primary_lea:
+          type: string
+          maxLength: 4
+        subpoena_service_type:
+          type: string
+          maxLength: 1
+        ori_type:
+          type: string
+          maxLength: 1
+        caldoj_compare_date:
+          type: string
+          format: date
+        expiration_date:
+          type: string
+          format: date
+        effective_start_date:
+          type: string
+          format: date
+        ajis_ori_sub_field:
+          type: string
+          maxLength: 1
+        caldoj_ori_onfile:
+          type: string
+          maxLength: 1
+        aka_agency_name:
+          type: string
+          maxLength: 40
+        caldoj_agency_name:
+          type: string
+          maxLength: 90
+        fax_number:
+          type: string
+          maxLength: 18
+    UpdateLea:
       type: object
       required:
         - arrest_agency_code
@@ -211,19 +317,10 @@ components:
         subpoena_service_type:
           type: string
           maxLength: 1
-        user_id:
-          type: string
-          maxLength: 30
         ori_type:
           type: string
           maxLength: 1
         caldoj_compare_date:
-          type: string
-          format: date
-        create_date:
-          type: string
-          format: date
-        update_date:
           type: string
           format: date
         expiration_date:
@@ -254,9 +351,18 @@ components:
           required:
             - last_updated
           properties:
+            user_id:
+              type: string
+              maxLength: 30
             last_updated:
               type: string
               format: date-time
+            create_date:
+              type: string
+              format: date
+            update_date:
+              type: string
+              format: date
     Error:
       type: object
       required:

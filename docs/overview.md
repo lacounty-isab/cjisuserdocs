@@ -13,3 +13,5 @@ The **CJIS Tables** are
 
 This site provides documenation for consumers of the CJIS tables
 through its API and Web UI.
+For code samples, see the
+[CJIS Tables SDK](https://github.com/lacounty-isab/cjissdk)

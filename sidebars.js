@@ -7,6 +7,8 @@ module.exports = {
     'Design': ['design/overview',
               ],
     'Reference': ['reference/adabas',
+                  'reference/chargeCode',
+                  'reference/arrestAgency',
                   'glossary',
                  ],
   },

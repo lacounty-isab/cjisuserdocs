@@ -1,6 +1,6 @@
 openapi: 3.0.2
 info:
-  version: 1.0.0
+  version: 1.1.0
   title: Charge Code API
   description: API for reading, adding, and updating CJIS charge codes
 servers:
@@ -30,6 +30,49 @@ paths:
       responses:
         '200':
           $ref: "#/components/responses/ChargeCodeList"
+    delete:
+      summary: Delete charge by id
+      description: Delete a single charge code by ID.
+      parameters:
+        - name: id
+          in: path
+          description: >-
+            Matches the internal ID (primary key) of the charge code.
+          required: true
+          schema:
+            type: integer
+        - $ref: "#/components/parameters/x-api-key"
+      responses:
+        '200':
+          description: >-
+            Returns number of charge codes deleted.  If charge
+            code did not exist, this number will be 0.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  affectedRows:
+                    type: integer
+              example:
+                affectedRows: 1
+        "400":
+          description: missing parameter
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+              example:
+                message: id URL parameter missing
+        "403":
+          $ref: "#/components/responses/Unauthorized"
+        '500':
+          $ref: "#/components/responses/DatabaseError"
+      security:
+        - cjis-auth: []
   '/ChargeCode/{code}/{statute}':
     get:
       summary: Get charges by code and statute
@@ -206,10 +249,11 @@ components:
             Originally created based on BCS code groups.
         bcs_class_code:
           type: string
+          minLength: 3
           maxLength: 3
           description: >-
-            Numeric BCS code assigned by the state to group charges by type
-            of offense.
+            Three-digit BCS code assigned by the state to group charges by type
+            of offense.  Must be three digits; left-pad with zeros if needed.
         reduce_flag:
           type: string
           maxLength: 1
@@ -362,10 +406,11 @@ components:
             Originally created based on BCS code groups.
         bcs_class_code:
           type: string
+          minLength: 3
           maxLength: 3
           description: >-
-            Numeric BCS code assigned by the state to group charges by type
-            of offense.
+            Three-digit BCS code assigned by the state to group charges by type
+            of offense.  Must be three digits; left-pad with zeros if needed.
         reduce_flag:
           type: string
           maxLength: 1
@@ -490,6 +535,9 @@ components:
               exp_date: "2011-12-31"
               reason: REPEALED - SEE PC32625
               template_id: 2309
+        text/csv:
+          schema:
+            type: string
     InvalidRequest:
       description: Not authorized; return unauthorized fields
       headers:

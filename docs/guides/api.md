@@ -87,10 +87,11 @@ listed below sample values.
 {
   "iss": "myidp",
   "sub": "e654321",
+  "aud": "cjisapi",
   "iat": 1629572400,
   "exp": 1629572500,
   "enabled": true,
-  "scope": ['myscope']
+  "scope": ["myscope"]
 }
 ```
 
