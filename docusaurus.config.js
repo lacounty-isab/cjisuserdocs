@@ -94,4 +94,5 @@ module.exports = {
       },
     ],
   ],
+  plugins: [require.resolve('./webpack5Plugin')],
 };
