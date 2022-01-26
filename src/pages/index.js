@@ -5,9 +5,11 @@ import Link from '@docusaurus/Link';
 import useDocusaurusContext from '@docusaurus/useDocusaurusContext';
 import styles from './styles.module.css';
 
-const API = ({title, summary, spec}) => (
+const API = ({title, summary, spec, draft}) => (
   <div className={classnames('col', styles.api)}>
-    <div className={'card'}>
+    <div className={classnames('card', styles['card-shadow'],
+                               {[styles.draft]: draft},
+                               {[styles.live]: !draft})}>
       <div className={'card__header'}>
         <h3>{title}</h3>
       </div>
@@ -82,5 +84,17 @@ const apis = [
     title: 'Charge Conversion',
     summary: 'Mapping used to assist with charge code conversions within Cloverleaf',
     spec: '/openapi/ChargeConversion.yaml'
+  },
+  {
+    title: 'Court Districts (draft)',
+    summary: 'Addresses for court districts',
+    spec: '/openapi/CourtDistrict.yaml',
+    draft: true
+  },
+  {
+    title: 'Court Departments (draft)',
+    summary: 'Addresses for court departments/divisions',
+    spec: '/openapi/CourtDistrict.yaml',
+    draft: true
   }
 ]

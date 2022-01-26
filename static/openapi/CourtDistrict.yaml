@@ -1,0 +1,278 @@
+openapi: 3.0.2
+info:
+  version: Draft
+  title: Court District API
+  description: LA County court district public information
+servers:
+  - url: "http//:localhost:6010/api"
+    description: "Local workstation, no API Gateway"
+  - url: "https://api-dev.codes.lacounty-isab.org/api/v1"
+    description: Development environment
+  - url: "https://api-test.codes.lacounty-isab.org/api/v1"
+    description: Test environment
+  - url: "https://api.codes.lacounty-isab.org/api/v1"
+    description: Production environment
+paths:
+  /CourtDistrict/{id}:
+    get:
+      summary: Get court district by ID
+      parameters:
+        - name: id
+          in: path
+          description: >-
+            The ID (primary key) of the court district.
+            Returns an array of 0 (no match) or 1 (single match) court districts.
+          required: true
+          schema:
+            type: integer
+        - $ref: "#/components/parameters/x-api-key"
+      responses:
+        '200':
+          $ref: "#/components/responses/CourtDistrictList"
+        "400":
+          $ref: "#/components/responses/InvalidRequest"
+  /CourtDistrict:
+    get:
+      summary: Get all court districts
+      parameters:
+        - $ref: "#/components/parameters/x-api-key"
+      responses:
+        '200':
+          $ref: "#/components/responses/CourtDistrictList"
+    post:
+      summary: Create new court district record
+      parameters:
+        - $ref: "#/components/parameters/x-api-key"
+      requestBody:
+        description: Court district without ID, which will be auto-generated
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/NewCourtDistrict"
+      responses:
+        '200':
+          description: ID of created court district record
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  insertId:
+                    type: integer
+              example:
+                insertId: 132
+        "400":
+          $ref: "#/components/responses/InvalidRequest"
+        "403":
+          $ref: "#/components/responses/Unauthorized"
+      security:
+        - cjis-auth: []
+    patch:
+      summary: Update existing court district record
+      parameters:
+        - $ref: "#/components/schemas/UpdateCourtDistrict"
+      responses:
+        "200":
+          description: Number of updated records
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  changedRows:
+                    type: integer
+              example:
+                changedRows: 1
+        "400":
+          $ref: "#/components/responses/InvalidRequest"
+        "403":
+          $ref: "#/components/responses/Unauthorized"
+      security:
+        - cjis-auth: []
+components:
+  schemas:
+    NewCourtDistrict:
+      type: object
+      required:
+        - court_type
+        - judicial_district
+        - description
+      properties:
+        court_type:
+          type: string
+          maxLength: 1
+          description: |
+            Values have the following meanings:
+            * `M` - Municipal
+            * `S` - Superior
+            * `X` - Juvenile
+            * `J` - Justice
+            * `P` - Parole
+          enum:
+            - M
+            - S
+            - X
+            - J
+            - P
+        judicial_district:
+          type: string
+          maxLength: 3
+        description:
+          type: string
+        city:
+          type: string
+        state_code:
+          type: integer
+        state_district_code:
+          type: integer
+        judicial_district_name:
+          type: string
+        exp_date:
+          type: string
+          format: date
+          maxLength: 10
+          description: Optional expiration.  Not expired if blank or absent.
+        prob_svc_office:
+          type: string
+          description: Probation service office
+        case_number_prefix:
+          type: string
+    CourtDistrict:
+      allOf:
+        - type: object
+          required:
+            - id
+          properties:
+            id:
+              type: integer
+              description: primary key
+            last_updated:
+              type: string
+              format: date
+              maxLength: 10
+        - $ref: "#/components/schemas/NewCourtDistrict"
+    UpdateCourtDistrict:
+      type: object
+      required:
+        - id
+      properties:
+        id:
+          type: integer
+          description: primary key
+        court_type:
+          type: string
+          maxLength: 1
+          description: |
+            Values have the following meanings:
+            * `M` - Municipal
+            * `S` - Superior
+            * `X` - Juvenile
+            * `J` - Justice
+            * `P` - Parole
+          enum:
+            - M
+            - S
+            - X
+            - J
+            - P
+        judicial_district:
+          type: string
+          maxLength: 3
+        description:
+          type: string
+        city:
+          type: string
+        state_code:
+          type: integer
+        state_district_code:
+          type: integer
+        judicial_district_name:
+          type: string
+        exp_date:
+          type: string
+          format: date
+          maxLength: 10
+          description: Optional expiration.  Not expired if blank or absent.
+        prob_svc_office:
+          type: string
+          description: Probation service office
+        case_number_prefix:
+          type: string
+  responses:
+    CourtDistrictList:
+      description: A list of court district records
+      headers:
+        x-amzn-RequestId:
+          $ref: "#/components/headers/x-amzn-RequestId"
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              $ref: "#/components/schemas/CourtDistrict"
+          example:
+            - id: 41
+              court_type: S
+              judicial_district: CEN
+              description: CENTRAL
+              city: LOS ANGELES
+              state_code: 19100
+              state_district_code: 190001
+              judicial_district_name: CENTRAL
+              prob_svc_office: CAI
+              case_number_prefix: B
+        text/csv:
+          schema:
+            type: string
+    Unauthorized:
+      description: Not authorized; return reason
+      headers:
+        x-amzn-RequestId:
+          $ref: "#/components/headers/x-amzn-RequestId"
+        x-cjisapi-requestid:
+          $ref: "#/components/headers/x-cjisapi-RequestId"
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              reason:
+                type: string
+            example:
+              - reason: User not authorized
+    InvalidRequest:
+      description: Missing required fields
+      headers:
+        x-amzn-RequestId:
+          $ref: "#/components/headers/x-amzn-RequestId"
+        x-cjisapi-RequestId:
+          $ref: "#/components/headers/x-cjisapi-RequestId"
+      content:
+        application/json:
+          schema:
+            type: array
+            minLength: 1
+            items:
+              type: string
+  parameters:
+    x-api-key:
+      name: x-api-key
+      in: header
+      description: API key enforced by AWS API Gateway
+      schema:
+        type: string
+      required: true
+  headers:
+    x-amzn-RequestId:
+      description: "Logged in AWS API Gateway CloudWatch; formatted as UUID"
+      schema:
+        type: string
+    x-cjisapi-RequestId:
+      description: Audit log reference formatted as UUID
+      schema:
+        type: string
+  securitySchemes:
+    cjis-auth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
