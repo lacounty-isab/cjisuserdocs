@@ -4,10 +4,6 @@ info:
   title: Court District API
   description: LA County court district public information
 servers:
-  - url: "http//:localhost:6010/api"
-    description: "Local workstation, no API Gateway"
-  - url: "https://api-dev.codes.lacounty-isab.org/api/v1"
-    description: Development environment
   - url: "https://api-test.codes.lacounty-isab.org/api/v1"
     description: Test environment
   - url: "https://api.codes.lacounty-isab.org/api/v1"
@@ -29,8 +25,6 @@ paths:
       responses:
         '200':
           $ref: "#/components/responses/CourtDistrictList"
-        "400":
-          $ref: "#/components/responses/InvalidRequest"
   /CourtDistrict:
     get:
       summary: Get all court districts
@@ -70,7 +64,29 @@ paths:
     patch:
       summary: Update existing court district record
       parameters:
-        - $ref: "#/components/schemas/UpdateCourtDistrict"
+        - $ref: "#/components/parameters/x-api-key"
+      requestBody:
+        description: Court district properties with unique ID
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateCourtDistrict"
+            examples:
+              prob1:
+                summary: Change probation service office
+                value:
+                  id: 13
+                  prob_svce_office: "XYZ"
+              expire1:
+                summary: Set an expiration date
+                value:
+                  id: 13
+                  exp_date: "2022-03-15"
+              expire2:
+                summary: Clear an expiration date
+                value:
+                  id: 13
+                  exp_date: null
       responses:
         "200":
           description: Number of updated records
@@ -100,6 +116,7 @@ components:
       properties:
         court_type:
           type: string
+          minLength: 1
           maxLength: 1
           description: |
             Values have the following meanings:
@@ -116,27 +133,44 @@ components:
             - P
         judicial_district:
           type: string
+          minLength: 1
           maxLength: 3
         description:
           type: string
+          minLength: 1
+          maxLength: 30
         city:
           type: string
+          nullable: true
+          maxLength: 20
         state_code:
-          type: integer
+          type: string
+          nullable: true
+          maxLength: 5
         state_district_code:
-          type: integer
+          type: string
+          nullable: true
+          maxLength: 6
         judicial_district_name:
           type: string
+          nullable: true
+          maxLength: 30
         exp_date:
           type: string
           format: date
+          nullable: true
+          minLength: 10
           maxLength: 10
-          description: Optional expiration.  Not expired if blank or absent.
+          description: Optional expiration.  Not expired if null or absent.
         prob_svc_office:
           type: string
           description: Probation service office
+          nullable: true
+          maxLength: 6
         case_number_prefix:
           type: string
+          nullable: true
+          maxLength: 1
     CourtDistrict:
       allOf:
         - type: object
@@ -161,6 +195,7 @@ components:
           description: primary key
         court_type:
           type: string
+          minLength: 1
           maxLength: 1
           description: |
             Values have the following meanings:
@@ -177,27 +212,44 @@ components:
             - P
         judicial_district:
           type: string
+          minLength: 1
           maxLength: 3
         description:
           type: string
+          minLength: 1
+          maxLength: 30
         city:
           type: string
+          nullable: true
+          maxLength: 20
         state_code:
-          type: integer
+          type: string
+          nullable: true
+          maxLength: 5
         state_district_code:
-          type: integer
+          type: string 
+          nullable: true
+          maxLength: 6
         judicial_district_name:
           type: string
+          nullable: true
+          maxLength: 30
         exp_date:
           type: string
           format: date
+          nullable: true
+          minLength: 10
           maxLength: 10
-          description: Optional expiration.  Not expired if blank or absent.
+          description: Optional expiration.  Not expired if null or absent.
         prob_svc_office:
           type: string
           description: Probation service office
+          nullable: true
+          maxLength: 6
         case_number_prefix:
           type: string
+          nullable: true
+          maxLength: 1
   responses:
     CourtDistrictList:
       description: A list of court district records

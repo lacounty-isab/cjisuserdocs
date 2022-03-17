@@ -10,10 +10,13 @@ tables and their CJIS Codes counterparts.
 
 | ADABAS Table | Conventional Name | Comments              |
 |--------------|-------------------|-----------------------|
-| `32704` | Charge Conversion | PIX use only; no longer actively maintained in ADABAS. |
+| `32673` | Court Scheduling | ADABAS only |
+| `32680` | Court Types | ADABAS only |
+| `32704` | Charge Conversion | Cloverleaf use only; no longer maintained in ADABAS. |
 | `32726` | Special Allegations |  |
 | `32742` | Allegations | Eventually will become part of charge code API as prescribed by Cal DOJ |
-| `32751` | Juvenile Court Districts |  |
-| `32754` | Court Dept/Div to District |  |
-| `32756` | Arrest Agency | System of record is now CCHRS LEA Master; readonly copy provided by API. |
-| `32757` | Charge Codes | Awaiting standards from Cal DOJ; meanwhile API exposes dump from ADABAS table. |
+| `32750` | Invalid Court Dates | ADABAS only |
+| `32751` | Court Districts | Migration to AWS in progress |
+| `32754` | Court Dept/Div  | Migration to AWS in progress |
+| `32756` | Arrest Agency | aka LEA table |
+| `32757` | Charge Codes | |

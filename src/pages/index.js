@@ -94,7 +94,7 @@ const apis = [
   {
     title: 'Court Departments (draft)',
     summary: 'Addresses for court departments/divisions',
-    spec: '/openapi/CourtDistrict.yaml',
+    spec: '/openapi/CourtDepartment.yaml',
     draft: true
   }
 ]

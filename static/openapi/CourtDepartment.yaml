@@ -4,10 +4,6 @@ info:
   title: Court Department API
   description: LA County court department/division public information
 servers:
-  - url: "http//:localhost:6010/api"
-    description: "Local workstation, no API Gateway"
-  - url: "https://api-dev.codes.lacounty-isab.org/api/v1"
-    description: Development environment
   - url: "https://api-test.codes.lacounty-isab.org/api/v1"
     description: Test environment
   - url: "https://api.codes.lacounty-isab.org/api/v1"
@@ -68,7 +64,34 @@ paths:
     patch:
       summary: Update existing court department record
       parameters:
-        - $ref: "#/components/schemas/UpdateCourtDepartment"
+        - $ref: "#/components/parameters/x-api-key"
+      requestBody:
+        description: Court department properties with unique ID
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateCourtDepartment"
+            examples:
+              phone1:
+                summary: Change phone number
+                value:
+                  id: 13
+                  phone: "213-123-4567"
+              phone2:
+                summary: Remove phone number
+                value:
+                  id: 13
+                  phone: null
+              expire1:
+                summary: Set an expiration date
+                value:
+                  id: 13
+                  exp_date: "2022-03-15"
+              expire2:
+                summary: Remove an expiration date
+                value:
+                  id: 13
+                  exp_date: null
       responses:
         "200":
           description: Number of updated records
@@ -99,6 +122,7 @@ components:
       properties:
         court_type:
           type: string
+          minLength: 1
           maxLength: 1
           description: |
             Values have the following meanings:
@@ -115,32 +139,50 @@ components:
             - P
         judicial_district:
           type: string
+          minLength: 1
           maxLength: 3
         department:
           type: string
+          minLength: 1
+          maxLength: 3
         description:
           type: string
+          maxLength: 30
         address:
           type: string
+          nullable: true
+          maxLength: 37
         city:
           type: string
+          nullable: true
+          maxLength: 20
         state:
           type: string
+          nullable: true
+          minLength: 2
           maxLength: 2
         zip:
           type: string
+          nullable: true
           minLength: 5
-          maxLength: 5
+          maxLength: 10
         phone:
           type: string
+          nullable: true
+          pattern: '^\d{3}-\d{3}-\d{4}$'
+          maxLength: 18
         exp_date:
           type: string
           format: date
+          nullable: true
+          minLength: 10
           maxLength: 10
-          description: Optional expiration.  Not expired if blank or absent.
+          description: Optional expiration.  Not expired if null or absent.
         prob_svc_office:
           type: string
+          nullable: true
           description: Probation service office
+          maxLength: 6
     CourtDepartment:
       allOf:
         - type: object
@@ -181,31 +223,51 @@ components:
             - P
         judicial_district:
           type: string
+          minLength: 1
           maxLength: 3
         department:
           type: string
+          minLength: 1
+          maxLength: 3
         description:
           type: string
+          minLength: 1
+          maxLength: 30
         address:
           type: string
+          nullable: true
+          maxLength: 37
         city:
           type: string
+          nullable: true
+          maxLength: 20
         state:
           type: string
+          nullable: true
+          minLength: 2
           maxLength: 2
         zip:
           type: string
+          nullable: true
           minLength: 5
-          maxLength: 5
+          maxLength: 10
         phone:
           type: string
+          nullable: true
+          pattern: '^\d{3}-\d{3}-\d{4}$'
+          minLength: 12
+          maxLength: 18
         exp_date:
           type: string
           format: date
+          nullable: true
+          minLength: 10
           maxLength: 10
-          description: Optional expiration.  Not expired if blank or absent.
+          description: Optional expiration.  Not expired if null or absent.
         prob_svc_office:
           type: string
+          nullable: true
+          maxLength: 6
           description: Probation service office
   responses:
     CourtDepartmentList:
