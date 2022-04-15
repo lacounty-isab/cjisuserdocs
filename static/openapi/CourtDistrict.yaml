@@ -9,18 +9,45 @@ servers:
   - url: "https://api.codes.lacounty-isab.org/api/v1"
     description: Production environment
 paths:
-  /CourtDistrict/{id}:
+  /CourtDistrict/{judicial_district}/{court_type}:
     get:
-      summary: Get court district by ID
+      summary: Get court district by primary key
+      description: Returns an arry of 0 (no match) or 1(match) court districts  
       parameters:
-        - name: id
+        - name: judicial_district
           in: path
           description: >-
-            The ID (primary key) of the court district.
-            Returns an array of 0 (no match) or 1 (single match) court districts.
+            The name of the district.
           required: true
           schema:
-            type: integer
+            type: string
+          example: "CEN"
+        - name: court_type
+          in: path
+          description: >-
+            The court type of the district.
+          required: true
+          schema:
+            type: string
+          example: "M"
+        - $ref: "#/components/parameters/x-api-key"
+      responses:
+        '200':
+          $ref: "#/components/responses/CourtDistrictList"
+  /CourtDistrict/{judicial_district}:
+    get:
+      summary: Get court districts
+      description: |
+        Returns court districts that match judicial_district code.
+      parameters:
+        - name: judicial_district
+          in: path
+          description: >-
+            The name of the district.
+          required: true
+          schema:
+            type: string
+          example: "CEN"
         - $ref: "#/components/parameters/x-api-key"
       responses:
         '200':
@@ -75,17 +102,20 @@ paths:
               prob1:
                 summary: Change probation service office
                 value:
-                  id: 13
+                  court_type: "M"
+                  judicial_district: "ING"
                   prob_svce_office: "XYZ"
               expire1:
                 summary: Set an expiration date
                 value:
-                  id: 13
+                  court_type: "M"
+                  judicial_district: "ING"
                   exp_date: "2022-03-15"
               expire2:
                 summary: Clear an expiration date
                 value:
-                  id: 13
+                  court_type: "M"
+                  judicial_district: "ING"
                   exp_date: null
       responses:
         "200":
@@ -119,6 +149,7 @@ components:
           minLength: 1
           maxLength: 1
           description: |
+            Part of primary key.
             Values have the following meanings:
             * `M` - Municipal
             * `S` - Superior
@@ -135,6 +166,7 @@ components:
           type: string
           minLength: 1
           maxLength: 3
+          description: Part of primary key.
         description:
           type: string
           minLength: 1
@@ -174,12 +206,7 @@ components:
     CourtDistrict:
       allOf:
         - type: object
-          required:
-            - id
           properties:
-            id:
-              type: integer
-              description: primary key
             last_updated:
               type: string
               format: date
@@ -188,16 +215,15 @@ components:
     UpdateCourtDistrict:
       type: object
       required:
-        - id
+        - court_type
+        - judicial_district
       properties:
-        id:
-          type: integer
-          description: primary key
         court_type:
           type: string
           minLength: 1
           maxLength: 1
           description: |
+            Part of the primary key.
             Values have the following meanings:
             * `M` - Municipal
             * `S` - Superior
@@ -214,6 +240,7 @@ components:
           type: string
           minLength: 1
           maxLength: 3
+          description: Part of the primary key.
         description:
           type: string
           minLength: 1
@@ -263,8 +290,7 @@ components:
             items:
               $ref: "#/components/schemas/CourtDistrict"
           example:
-            - id: 41
-              court_type: S
+            - court_type: S
               judicial_district: CEN
               description: CENTRAL
               city: LOS ANGELES

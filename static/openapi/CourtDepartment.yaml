@@ -9,18 +9,67 @@ servers:
   - url: "https://api.codes.lacounty-isab.org/api/v1"
     description: Production environment
 paths:
-  /CourtDepartment/{id}:
+  /CourtDepartment/{judicial_district}/{department}/{court_type}:
     get:
-      summary: Get court department by ID
+      summary: Get court department by primary key
+      description: Returns an array of 0 (no match) or 1 (single match) court department.
       parameters:
-        - name: id
+        - name: judicial_district
           in: path
-          description: >-
-            The ID (primary key) of the court department.
-            Returns an array of 0 (no match) or 1 (single match) court department.
           required: true
           schema:
-            type: integer
+            type: string
+          example: "NO"
+        - name: department
+          in: path
+          required: true
+          schema:
+            type: string
+          example: "P"
+        - name: court_type
+          in: path
+          required: true
+          schema:
+            type: string
+          example: "S"
+        - $ref: "#/components/parameters/x-api-key"
+      responses:
+        "200":
+          $ref: "#/components/responses/CourtDepartmentList"
+  /CourtDepartment/{judicial_district}/{department}:
+    get:
+      summary: Get court departments
+      description: |
+        Return court departments matching a judicial
+        district and department name.
+      parameters:
+        - name: judicial_district
+          in: path
+          required: true
+          schema:
+            type: string
+          example: "NO"
+        - name: department
+          in: path
+          required: true
+          schema:
+            type: string
+          example: "P"
+        - $ref: "#/components/parameters/x-api-key"
+      responses:
+        "200":
+          $ref: "#/components/responses/CourtDepartmentList"
+  /CourtDepartment/{judicial_district}:
+    get:
+      summary: Get court departments
+      description: Return court departments for a judicial district.
+      parameters:
+        - name: judicial_district
+          in: path
+          required: true
+          schema:
+            type: string
+          example: "NO"
         - $ref: "#/components/parameters/x-api-key"
       responses:
         "200":
@@ -38,7 +87,7 @@ paths:
       parameters:
         - $ref: "#/components/parameters/x-api-key"
       requestBody:
-        description: Court department without ID, which will be auto-generated
+        description: New court department
         content:
           application/json:
             schema:
@@ -75,22 +124,30 @@ paths:
               phone1:
                 summary: Change phone number
                 value:
-                  id: 13
+                  court_type: "S"
+                  judicial_district: "NO"
+                  department: "P"
                   phone: "213-123-4567"
               phone2:
                 summary: Remove phone number
                 value:
-                  id: 13
+                  court_type: "S"
+                  judicial_district: "NO"
+                  department: "P"
                   phone: null
               expire1:
                 summary: Set an expiration date
                 value:
-                  id: 13
+                  court_type: "S"
+                  judicial_district: "NO"
+                  department: "P"
                   exp_date: "2022-03-15"
               expire2:
                 summary: Remove an expiration date
                 value:
-                  id: 13
+                  court_type: "S"
+                  judicial_district: "NO"
+                  department: "P"
                   exp_date: null
       responses:
         "200":
@@ -125,6 +182,7 @@ components:
           minLength: 1
           maxLength: 1
           description: |
+            Part of primary key.
             Values have the following meanings:
             * `M` - Municipal
             * `S` - Superior
@@ -141,10 +199,12 @@ components:
           type: string
           minLength: 1
           maxLength: 3
+          description: Part of primary key.
         department:
           type: string
           minLength: 1
           maxLength: 3
+          description: Part of primary key.
         description:
           type: string
           maxLength: 30
@@ -185,30 +245,25 @@ components:
           maxLength: 6
     CourtDepartment:
       allOf:
+        - $ref: "#/components/schemas/NewCourtDepartment"
         - type: object
-          required:
-            - id
           properties:
-            id:
-              type: integer
-              description: primary key
             last_updated:
               type: string
               format: date
               maxLength: 10
-        - $ref: "#/components/schemas/NewCourtDepartment"
     UpdateCourtDepartment:
       type: object
       required:
-        - id
+        - court_type
+        - judicial_district
+        - department
       properties:
-        id:
-          type: integer
-          description: primary key
         court_type:
           type: string
           maxLength: 1
           description: |
+            Part of primary key.
             Values have the following meanings:
             * `M` - Municipal
             * `S` - Superior
@@ -225,10 +280,12 @@ components:
           type: string
           minLength: 1
           maxLength: 3
+          description: Part of primary key.
         department:
           type: string
           minLength: 1
           maxLength: 3
+          description: Part of primary key.
         description:
           type: string
           minLength: 1
@@ -282,8 +339,7 @@ components:
             items:
               $ref: "#/components/schemas/CourtDepartment"
           example:
-            - id: 1254
-              court_type: S
+            - court_type: S
               judicial_district: NO
               department: A05
               description: NORTH - LANCASTER
