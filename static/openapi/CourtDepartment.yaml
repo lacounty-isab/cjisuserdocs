@@ -1,6 +1,6 @@
 openapi: 3.0.2
 info:
-  version: Draft
+  version: 1.0.0
   title: Court Department API
   description: LA County court department/division public information
 servers:

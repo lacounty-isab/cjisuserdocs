@@ -86,15 +86,15 @@ const apis = [
     spec: '/openapi/ChargeConversion.yaml'
   },
   {
-    title: 'Court Districts (draft)',
+    title: 'Court Districts',
     summary: 'Addresses for court districts',
     spec: '/openapi/CourtDistrict.yaml',
-    draft: true
+    draft: false
   },
   {
-    title: 'Court Departments (draft)',
+    title: 'Court Departments',
     summary: 'Addresses for court departments/divisions',
     spec: '/openapi/CourtDepartment.yaml',
-    draft: true
+    draft: false
   }
 ]
