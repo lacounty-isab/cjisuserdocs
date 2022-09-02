@@ -1,13 +1,9 @@
 openapi: 3.0.2
 info:
-  version: 1.1.0
+  version: 1.1.1
   title: Charge Code API
   description: API for reading, adding, and updating CJIS charge codes
 servers:
-  - url: "http//:localhost:6010/api"
-    description: "Local workstation, no API Gateway"
-  - url: "https://api-dev.codes.lacounty-isab.org/api/v1"
-    description: Development environment
   - url: "https://api-test.codes.lacounty-isab.org/api/v1"
     description: Test environment
   - url: "https://api.codes.lacounty-isab.org/api/v1"
@@ -203,6 +199,11 @@ components:
         - full_description
         - template_id
       properties:
+        template_id:
+          type: integer
+          format: int32
+          minimum: 0
+          description: Used as primary key by original ADABAS `32757` table
         code:
           type: string
           maxLength: 2
@@ -320,22 +321,6 @@ components:
           type: string
           maxLength: 40
           description: Reason for expiring a charge
-        composite_key:
-          type: string
-          maxLength: 33
-          description: |
-            A concatenation of six fields used to enforce uniqueness of entries
-            within ADABAS table `32757`.
-            * `code` - 2 characters
-            * `statute` - 18 characters
-            * `literal_id` - 3 characters
-            * `degree` - 1 character
-            * `offense_level` - 1 character
-            * `exp_date` - 8 characters
-        alt_composite_key:
-          type: string
-          maxLength: 33
-          description: Same as `alt_composite_key`
         state_cjis_code:
           type: string
           maxLength: 7
@@ -348,11 +333,6 @@ components:
           type: string
           maxLength: 12
           description: Requested by ACTS and DIMS in 1991
-        template_id:
-          type: integer
-          format: int32
-          minimum: 0
-          description: Used as primary key by original ADABAS `32757` table
     UpdateChargeCode:
       type: object
       required:
@@ -360,6 +340,11 @@ components:
       properties:
         id:
           type: integer
+        template_id:
+          type: integer
+          format: int32
+          minimum: 0
+          description: Used as primary key by original ADABAS `32757` table
         code:
           type: string
           maxLength: 2
@@ -489,20 +474,33 @@ components:
           type: string
           maxLength: 12
           description: Requested by ACTS and DIMS in 1991
-        template_id:
-          type: integer
-          format: int32
-          minimum: 0
-          description: Used as primary key by original ADABAS `32757` table
     ChargeCode:
       allOf:
-        - $ref: "#/components/schemas/NewChargeCode"
         - type: object
           required:
             - id
           properties:
             id:
               type: integer
+        - $ref: "#/components/schemas/NewChargeCode"
+        - type: object
+          properties:
+            composite_key:
+              type: string
+              maxLength: 33
+              description: |
+                A concatenation of six fields used to enforce uniqueness of entries
+                within ADABAS table `32757`.
+                * `code` - 2 characters
+                * `statute` - 18 characters
+                * `literal_id` - 3 characters
+                * `degree` - 1 character
+                * `offense_level` - 1 character
+                * `exp_date` - 8 characters
+            alt_composite_key:
+              type: string
+              maxLength: 33
+              description: Same as `alt_composite_key`
             last_updated:
               type: string
               maxLength: 10
